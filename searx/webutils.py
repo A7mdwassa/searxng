@@ -186,10 +186,11 @@ def get_static_file_list() -> list[str]:
     def _walk(path: pathlib.Path):
         for f in path.iterdir():
             if f.name.startswith('.'):
-                # ignore hidden file
                 continue
+
             if f.is_file():
-                file_list.append(str(f.relative_to(static_path)))
+                file_list.append(f.relative_to(static_path).as_posix())
+
             if f.is_dir():
                 _walk(f)
 
@@ -200,11 +201,16 @@ def get_static_file_list() -> list[str]:
 def get_result_templates(templates_path):
     result_templates = set()
     templates_path_length = len(templates_path) + 1
+
     for directory, _, files in os.walk(templates_path):
-        if directory.endswith('result_templates'):
+        if directory.endswith("result_templates"):
             for filename in files:
-                f = os.path.join(directory[templates_path_length:], filename)
+                f = os.path.join(
+                    directory[templates_path_length:],
+                    filename,
+                ).replace("\\", "/")
                 result_templates.add(f)
+
     return result_templates
 
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 # SPDX-License-Identifier: AGPL-3.0-or-later
 """WebApp"""
 # pylint: disable=use-dict-literal
@@ -242,12 +242,14 @@ def code_highlighter(codelines, language=None, hl_lines=None, strip_whitespace=T
 
     return html_code
 
-
 def get_result_template(theme_name: str, template_name: str):
-    themed_path = theme_name + '/result_templates/' + template_name
+    themed_path = f"{theme_name}/result_templates/{template_name}"
+
     if themed_path in result_templates:
         return themed_path
-    return 'result_templates/' + template_name
+
+    return themed_path
+
 
 
 _STATIC_FILES: list[str] = []
@@ -1387,7 +1389,6 @@ def static_headers(headers: Headers, _path: str, _url: str) -> None:
     for header, value in settings['server']['default_http_headers'].items():
         # cast value to string, as WhiteNoise requires header values to be strings
         headers[header] = str(value)
-
 
 app.wsgi_app = ProxyFix(app.wsgi_app)
 app.wsgi_app = WhiteNoise(

@@ -19,16 +19,23 @@ A valkey DB connect can be tested by::
 """
 
 import os
-import pwd
 import logging
 import warnings
-
+import getpass
 import valkey
 from searx import get_setting
 
 _CLIENT: valkey.Valkey | None = None
 logger = logging.getLogger(__name__)
 
+
+# Windows fallback for _pw = pwd.getpwuid(os.getuid())
+
+class MockPW:
+
+    def __init__(self):
+
+        self.pw_name = getpass.getuser()
 
 def client() -> valkey.Valkey | None:
     """Returns SearXNG's global Valkey DB connector (Valkey client object)."""
@@ -60,6 +67,6 @@ def initialize():
         return True
     except valkey.exceptions.ValkeyError:
         _CLIENT = None
-        _pw = pwd.getpwuid(os.getuid())
+        _pw = MockPW()
         logger.exception("[%s (%s)] can't connect valkey DB ...", _pw.pw_name, _pw.pw_uid)
     return False
